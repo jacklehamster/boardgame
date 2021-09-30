@@ -88,6 +88,9 @@ class Renderer {
 			case "possible-move":
 				ctx.fillStyle = "#FFFFaa";	
 				break;
+			case "threatened":
+				ctx.fillStyle = "#00aa00";
+				break;	
 			default:
 				ctx.fillStyle = "#FFFF77";	
 		}

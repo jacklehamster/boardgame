@@ -140,6 +140,9 @@ class PrimeChessModel extends Model {
 				renderer.drawCircle(x, y, .5, "#eeFFdd");
 				renderer.drawCircle(x, y, .3, "#ddFFdd");
 			}
+			if (unit && unit.player === this.turn && unit.king) {
+				renderer.highlight(to, "threatened");
+			}
 		}
 
 
@@ -192,7 +195,7 @@ class PrimeChessModel extends Model {
 			const { x, y } = id2location(to);
 			const unit = this.board.getCell(x, y);
 			if (unit && unit.player === this.turn) {
-				renderer.drawText(x+.35, y-.3, "!", '16px serif bold', "#00aa00");
+				renderer.drawText(x+.35, y-.25, "!", '16px serif bold', "#00aa00");
 			}
 		}
 
