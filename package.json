@@ -1,0 +1,30 @@
+{
+  "name": "boardgame",
+  "version": "1.0.0",
+  "description": "Gorad game",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vincent Le Quang <vincentlequang@gmail.com> (https://jacklehamster.github.io/)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacklehamster/boardgame.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jacklehamster/dok-game/issues"
+  },
+  "homepage": "https://github.com/jacklehamster/dok-game#readme",
+  "dependencies": {
+    "@neutralinojs/neu": "^6.0.5",
+    "archiver": "^5.2.0",
+    "colors": "^1.4.0",
+    "express": "^4.17.1",
+    "express-static": "^1.2.6",
+    "minify-all": "^1.2.2",
+    "node-zip": "^1.0.1",
+    "nw-builder": "^3.5.7",
+    "uglify-js": "^3.12.5"
+  }
+}

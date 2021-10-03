@@ -15,8 +15,9 @@ class Engine {
 		});
 
 		const engine = this;
-		this.render = () => {
-			if (this.renderer.render(this.model)) {
+		this.render = async () => {
+			const refresh = await this.renderer.render(this.model);
+			if (refresh) {
 				requestAnimationFrame(this.render);
 			}
 		};
