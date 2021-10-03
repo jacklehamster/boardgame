@@ -129,9 +129,20 @@ class PrimeChessModel extends Model {
 
 		renderer.drawGrid();
 
+		// const totalCoverage = {};
+		// this.board.getTotalCoverage(this.turn, totalCoverage);
+		// for (let move in totalCoverage) {
+		// 	const [from, to] = fromTo(move);
+		// 	const { x, y } = id2location(to);
+		// 	const unit = this.board.getCell(x, y);
+		// 	if (!unit || unit.player !== this.turn) {
+		// 		renderer.drawCircle(x, y, .5, "#FFf5f5");
+		// 		renderer.drawCircle(x, y, .3, "#FFeedd");
+		// 	}
+		// }
+
 		const totalThreats = {};
 		this.board.getTotalCoverage(opponentTurn(this.turn), totalThreats);
-
 		for (let move in totalThreats) {
 			const [from, to] = fromTo(move);
 			const { x, y } = id2location(to);

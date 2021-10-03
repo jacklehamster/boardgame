@@ -201,29 +201,60 @@ class Board {
 		return player===2?1:-1;
 	}
 
-	getMoveHelper(cellId, x, y, unit, result, remainingCount, visited, filter, path) {
-		const { player } = unit;
-		if (remainingCount === 0) {
-			return this.addIfValid(cellId, x, y, unit, result, filter, path);
+	getAllMovesFrom(cellId) {
+		const unit = this.getCellAtId(cellId);
+		if (unit.king || unit.pawn) {
+			console.error("Method only for non-king / non-pawn units");
+			return {};
 		}
-		let count = 0;
-		const nextPath = `${path}-${location2id(x, y)}`
-		MOVE4.forEach(({dx, dy}) => {
-			const targetUnit = this.getCell(x + dx, y + dy);
-			if (targetUnit && (remainingCount > 1 || !this.canEnterCell(x + dx, y + dy, unit))) {
-				return;
-			}
-			if (this.outOfBound(x + dx, y + dy)) {
-				return;
-			}
+		const result = {};
+		let path = "";
+		const {x, y} = id2location(cellId);
+		let queueHead = {
+			num: unit.num,
+			x, y, path: cellId,
+		};
+		let queueTail = queueHead;
+		const visited = {
+		};
+		visited[`${x},${y}`] = true;
+		while(queueHead) {
+			if (queueHead.num) {
+				MOVE4.forEach(({dx, dy}) => {
+					const nx = queueHead.x + dx, ny = queueHead.y + dy;
+					if (!visited[`${nx},${ny}`]) {
+						visited[`${nx},${ny}`] = true;
+						if (this.outOfBound(nx, ny)) {
+							return;
+						}
+						if (this.getCell(nx, ny) && queueHead.num !== 1) {
+							return;
+						}
 
-			const id = location2id(x + dx, y + dy);
-			if (!visited[id]) {
-				visited[id] = true;
-				count += this.getMoveHelper(cellId, x + dx, y + dy, unit, result, remainingCount - 1, visited, filter, nextPath);
-				visited[id] = false;
+						queueTail = queueTail.next = {
+							num: queueHead.num - 1,
+							x: nx, y: ny,
+							path: `${queueHead.path}-${location2id(nx, ny)}`,
+						};
+					}
+				});
+			} else {
+				result[`${cellId}-${location2id(queueHead.x, queueHead.y)}`] = queueHead.path;
 			}
-		});
+			queueHead = queueHead.next;
+		}
+		return result;
+	}
+
+	getMoveHelper(cellId, x, y, unit, result, filter) {
+		const { player } = unit;
+		const allMoves = this.getAllMovesFrom(cellId);
+		let count = 0;
+		for (let move in allMoves) {
+			const [from,to] = fromTo(move);
+			const location = id2location(to);
+			count += this.addIfValid(cellId, location.x, location.y, unit, result, filter, "-" + allMoves[move]);
+		}
 		return count;
 	}
 
@@ -249,7 +280,10 @@ class Board {
 		let count = 0;
 		for (let y = 0; y < this.height; y++) {
 			for (let x = 0; x < this.width; x++) {
-				count += this.getMoves(x, y, moves);
+				const unit = this.getCell(x, y);
+				if (unit && unit.player === player) {
+					count += this.getMoves(x, y, moves);
+				}
 			}
 		}
 		return count;
@@ -286,15 +320,16 @@ class Board {
 	}
 
 	getMoves(x, y, result, filter) {
-		const tag = `${x}/${y}/${filter}`;
-		// if (this.cachedMoves[tag]) {
-		// 	let count = 0;
-		// 	for (let move in this.cachedMoves[tag]) {
-		// 		result[move] = this.cachedMoves[tag][move];
-		// 		count++;
-		// 	}
-		// 	return count;
-		// }
+		const tag = `${x}/${y}/${filter||""}`;
+		if (this.cachedMoves[tag]) {
+			let count = 0;
+			for (let move in this.cachedMoves[tag]) {
+				result[move] = this.cachedMoves[tag][move];
+				count++;
+			}
+			return count;
+		}
+		const localResult = {};
 		const unit = this.getCell(x, y);
 		if (!unit) {
 			return 0;
@@ -305,27 +340,27 @@ class Board {
 		if (pawn) {
 			const dy = this.getPlayerDirection(player) * num;
 			if (this.canPawnMoveTo(cellId, x - num, y)) {
-				countMoves += this.addIfValid(cellId, x - num, y, unit, result, filter, `-${cellId}`);
+				countMoves += this.addIfValid(cellId, x - num, y, unit, localResult, filter, `-${cellId}`);
 			}
 			if (this.canPawnMoveTo(cellId, x + num, y)) {
-				countMoves += this.addIfValid(cellId, x + num, y, unit, result, filter, `-${cellId}`);
+				countMoves += this.addIfValid(cellId, x + num, y, unit, localResult, filter, `-${cellId}`);
 			}
 			if (this.canPawnMoveTo(cellId, x, y + dy)) {
-				countMoves += this.addIfValid(cellId, x, y + dy, unit, result, filter, `-${cellId}`);
+				countMoves += this.addIfValid(cellId, x, y + dy, unit, localResult, filter, `-${cellId}`);
 			}
 		} else if (king) {
 			for (let dy = -1; dy <= 1; dy++) {
 				for (let dx = -1; dx <= 1; dx++) {
-					countMoves += this.addIfValid(cellId, x + dx, y + dy, unit, result, filter, `-${cellId}`);					
+					countMoves += this.addIfValid(cellId, x + dx, y + dy, unit, localResult, filter, `-${cellId}`);					
 				}
 			}
 		} else {
-			countMoves += this.getMoveHelper(cellId, x, y, unit, result, num, {}, filter, "");
+			countMoves += this.getMoveHelper(cellId, x, y, unit, localResult, filter);
 		}
 		if (countMoves) {
-			this.cachedMoves[tag] = {};
-			for (let move in result) {
-				this.cachedMoves[tag][move] = result[move];
+			this.cachedMoves[tag] = localResult;
+			for (let move in localResult) {
+				result[move] = localResult[move];
 			}
 		}
 		return countMoves;
