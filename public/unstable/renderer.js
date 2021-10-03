@@ -61,11 +61,26 @@ class UnstableRenderer extends GridRenderer {
 			}
 		}
 
+		const unitHovered = model.board.getCellAtId(cellUnderMouse);
+
+		this.setCursor(unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
+
 		if (selected) {
 			this.boldCell(selected);
 			if (possiblePath) {
 				this.boldCell(cellUnderMouse);
 			}
+		}
+
+		let line = 0;
+		for (let m = model.previousModel; m; m = m.previousModel) {
+			const { nextMove } = m;
+			this.drawText(8.5, line / 2, nextMove, "20px serif", "#888888");
+			line++;
+		}
+
+		if (!model.board.isLegalBoard(model.turn)) {
+			this.drawText(model.board.width / 2 - 1.5, -1.2, "invalid board", "20px serif", "#880000");			
 		}
 	}
 }

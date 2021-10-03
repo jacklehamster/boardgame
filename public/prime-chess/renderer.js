@@ -131,16 +131,6 @@ class PrimeChessRenderer extends GridRenderer {
 		ctx.stroke();
 	}
 
-	drawText(px, py, text, font, color) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		const string = "" + text;
-		ctx.fillStyle = color || "#000000";
-		ctx.font = font || '30px serif';
-		ctx.fillText(string, x + (px + .5) * width / cols - 7, y + (py + .5) * height / cols + 9);
-	}
-
 	drawButton(text, font, color) {
 		const { ctx } = this;
 		const { x, y, width, height } = this.rect;
@@ -317,7 +307,7 @@ class PrimeChessRenderer extends GridRenderer {
 		let line = 0;
 		for (let m = model.previousModel; m; m = m.previousModel) {
 			const { nextMove } = m;
-			this.drawText(9.5, line / 2, nextMove, "20px serif", "#888888");
+			this.drawText(8.5, line / 2, nextMove, "20px serif", "#888888");
 			line++;
 		}
 

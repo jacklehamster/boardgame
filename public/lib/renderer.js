@@ -30,7 +30,7 @@ class Renderer {
 
 	createCanvas() {
 		const canvas = document.createElement("canvas");
-		canvas.width = 650;
+		canvas.width = 600;
 		canvas.height = 500;
 		canvas.style.border = "1px solid black";
 		document.body.appendChild(canvas);

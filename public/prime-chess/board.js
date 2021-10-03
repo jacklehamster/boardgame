@@ -216,6 +216,23 @@ class Board extends Board2d {
 		return count;
 	}
 
+	getThreats(cellId, player, threats) {
+		const target = id2location(cellId);
+		if (!target) {
+			return 0;
+		}
+		let count = 0;
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const unit = this.getCell(x, y);
+				if (unit && unit.player !== player) {
+					count += this.getMoves(x, y, threats, `to/${cellId}`);
+				}
+			}
+		}
+		return count;
+	}
+
 	calculateMoves(x, y, result, filter) {
 		const unit = this.getCell(x, y);
 		if (!unit) {
@@ -245,6 +262,17 @@ class Board extends Board2d {
 			countMoves += this.getMoveHelper(cellId, x, y, unit, result, filter);
 		}	
 		return countMoves;	
+	}
+	
+	canEnterCell(x, y, unit) {
+		const occupyingCell = this.getCell(x, y);
+		if (!occupyingCell) {
+			return true;
+		}
+		if (unit.player === occupyingCell.player) {
+			return !unit.king && !occupyingCell.king && unit.num >= occupyingCell.num;
+		}
+		return true;
 	}
 
 	isLegalBoard(turn) {

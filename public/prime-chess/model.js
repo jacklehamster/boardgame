@@ -34,10 +34,6 @@ class PrimeChessModel extends Model {
 		this.board.copy(model.board);
 	}
 
-	switchTurn() {
-		this.turn = opponentTurn(this.turn);
-	}
-
 	unitCanPlay(cellId) {
 		const unit = this.board.getCellAtId(cellId);
 		return unit && unit.player === this.turn;
@@ -79,5 +75,22 @@ class PrimeChessModel extends Model {
 		const { previousModel } = this;
 		this.copy(previousModel);
 		this.previousModel = previousModel.previousModel;
+	}
+	
+	performMove(move) {
+		this.hoveredCell = null;
+		this.hoveredButton = null;
+		const previousModel = this.clone();
+		previousModel.nextMove = move;
+		previousModel.previousModel = this.previousModel;
+		this.previousModel = previousModel;
+
+		this.selectedCell = null;
+		this.board.move(move);
+		this.switchTurn();
+	}
+
+	switchTurn() {
+		this.turn = opponentTurn(this.turn);
 	}
 }

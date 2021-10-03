@@ -138,4 +138,14 @@ class GridRenderer extends Renderer {
 		ctx.fill();
 		ctx.globalAlpha = 1;
 	}
+
+	drawText(px, py, text, font, color) {
+		const { ctx } = this;
+		const { x, y, width, height } = this.rect;
+		const [cols, rows] = this.dimensions;
+		const string = "" + text;
+		ctx.fillStyle = color || "#000000";
+		ctx.font = font || '30px serif';
+		ctx.fillText(string, x + (px + .5) * width / cols - 7, y + (py + .5) * height / cols + 9);
+	}
 }
