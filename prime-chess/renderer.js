@@ -1,48 +1,40 @@
-class Renderer {
+class PrimeChessRenderer extends Renderer {
 	constructor() {
-		this.canvas = this.createCanvas();
-		this.dimensions = [1, 1];
-		this.rect = { x:0, y:0, width:this.canvas.width, height:this.canvas.height };
-		this.mouse = { x: 0, y: 0 };
-		this.ctx = this.canvas.getContext("2d");
+		super();
 		this.buttons = [];
 	}
 
-	createCanvas() {
-		const canvas = document.createElement("canvas");
-		canvas.width = 650;
-		canvas.height = 500;
-		canvas.style.border = "1px solid black";
-		document.body.appendChild(canvas);
-		return canvas;
-	}
-
-	setCursor(cursor) {
-		const { canvas }= this;
-		if (canvas.style.cursor !== cursor) {
-			canvas.style.cursor = cursor;
+	setMouse(x, y, model) {
+		super.setMouse(x, y, model);
+		const cell = this.getCellUnderMouse();
+		let shouldRender = false;
+		if (model.hoveredCell !== cell) {
+			model.hoveredCell = cell;
+			shouldRender = true;
 		}
+		const button = this.getButtonUnderMouse();
+		if (model.hoveredButton !== button) {
+			model.hoveredButton = button;
+			shouldRender = true;
+		}
+		return shouldRender;
 	}
 
-	clear() {
-		this.buttons.length = 0;
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	click(x, y, model) {
+		super.click(x, y, model);
+		model.click(this.getCellUnderMouse(), this.getButtonUnderMouse());
+		return true;
 	}
 
-	setMouse(pageX, pageY) {
-		const x = pageX - this.canvas.offsetLeft, y = pageY - this.canvas.offsetTop;
-		this.mouse.x = x;
-		this.mouse.y = y;
-	}
-
-	setRect(x, y, width, height) {
-		this.rect = {
-			x, y, width, height,
-		};
-	}
-
-	setDimensions(cols, rows) {
-		this.dimensions = [cols, rows];
+	getButtonUnderMouse() {
+		const { ctx, mouse } = this;
+		for (let i = 0; i < this.buttons.length; i++) {
+			const {text, x, y, width, height} = this.buttons[i];
+			if (mouse.x >= x && mouse.x <= x + width && mouse.y >= y && mouse.y <= y + height) {
+				return text;
+			}
+		}
+		return null;
 	}
 
 	getCellUnderMouse() {
@@ -59,17 +51,6 @@ class Renderer {
 			return null;
 		}
 		return location2id(px, py);
-	}
-
-	getButtonUnderMouse() {
-		const { ctx, mouse } = this;
-		for (let i = 0; i < this.buttons.length; i++) {
-			const {text, x, y, width, height} = this.buttons[i];
-			if (mouse.x >= x && mouse.x <= x + width && mouse.y >= y && mouse.y <= y + height) {
-				return text;
-			}
-		}
-		return null;
 	}
 
 	highlight(cellId, type) {
@@ -292,5 +273,140 @@ class Renderer {
 		}
 		ctx.fill();
 		ctx.stroke();		
+	}
+
+	render(model) {
+		this.setRect(50, 50, 400, 400);
+		this.setDimensions(model.board.width, model.board.height);
+		this.clear();
+
+		//	Bottom layer
+
+		if (model.turn === 1) {
+			this.drawTurn(475, 400, 10, model.turn);
+		} else {
+			this.drawTurn(475, 100, 10, model.turn);			
+		}
+
+		const selected = model.selectedCell;
+
+		const moves = {};
+		const cellUnderMouse = model.hoveredCell;
+		const cellHighlighted = selected || cellUnderMouse;
+		let possiblePath = null;
+
+		if (model.unitCanPlay(cellHighlighted) && model.board.possibleMoves(cellHighlighted, moves)) {
+			this.highlight(cellHighlighted, "hovered");
+			for (let move in moves) {
+				const [from, to] = fromTo(move);
+				this.highlight(to, "possible-move");
+				if (to === cellUnderMouse) {
+					possiblePath = moves[move];
+				}
+			}
+		}
+
+		const unitHovered = model.board.getCellAtId(cellUnderMouse);
+
+		this.drawGrid();
+
+		// const totalCoverage = {};
+		// model.board.getTotalCoverage(model.turn, totalCoverage);
+		// for (let move in totalCoverage) {
+		// 	const [from, to] = fromTo(move);
+		// 	const { x, y } = id2location(to);
+		// 	const unit = morel.board.getCell(x, y);
+		// 	if (!unit || unit.player !== model.turn) {
+		// 		this.drawCircle(x, y, .5, "#FFf5f5");
+		// 		this.drawCircle(x, y, .3, "#FFeedd");
+		// 	}
+		// }
+
+		const totalThreats = {};
+		model.board.getTotalCoverage(opponentTurn(model.turn), totalThreats);
+		for (let move in totalThreats) {
+			const [from, to] = fromTo(move);
+			const { x, y } = id2location(to);
+			const unit = model.board.getCell(x, y);
+			if (!unit || unit.player !== model.turn) {
+				this.drawCircle(x, y, .5, "#eeFFdd");
+				this.drawCircle(x, y, .3, "#ddFFdd");
+			}
+			if (unit && unit.player === model.turn && unit.king) {
+				this.highlight(to, "threatened");
+			}
+		}
+
+
+		if (possiblePath) {
+			this.drawPath(possiblePath);
+		}
+
+
+		//	Top layer
+
+		const threats = {};
+		const selectedUnit = model.board.getCellAtId(cellHighlighted);
+		if (selectedUnit && selectedUnit.player === model.turn) {
+			if (model.board.getThreats(cellHighlighted, model.turn, threats)) {
+				for (let move in threats) {
+					const [from, to] = fromTo(move);
+					this.boldCell(from, "#00aa00")
+				}			
+			}
+		}
+
+		if (selected) {
+			this.boldCell(selected);
+			if (possiblePath) {
+				this.boldCell(cellUnderMouse);
+			}
+		}
+
+		for (let y = 0; y < model.board.height; y++) {
+			for (let x = 0; x < model.board.width; x++) {
+				const unit = model.board.getCell(x, y);
+				if (unit) {
+					const { player, num, king, pawn } = unit;
+					const direction = model.board.getPlayerDirection(player);
+					if (pawn) {
+						this.drawTriangle(x, y, player, direction);
+					} else if (king) {
+						this.drawRect(x, y, player);
+					} else {
+						this.drawUnit(x, y, player);
+					}
+					const offset = !pawn ? 0 : direction * -.1;
+					this.drawText(x, y + offset, num, '30px serif', "#000000");
+				}
+			}
+		}
+
+		for (let move in totalThreats) {
+			const [from, to] = fromTo(move);
+			const { x, y } = id2location(to);
+			const unit = model.board.getCell(x, y);
+			if (unit && unit.player === model.turn) {
+				this.drawText(x+.35, y-.25, "!", '16px serif bold', "#00aa00");
+			}
+		}
+
+		if (model.previousModel) {
+			const label = "[ undo ]";
+			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+		}
+
+		this.setCursor(unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
+
+		let line = 0;
+		for (let m = model.previousModel; m; m = m.previousModel) {
+			const { nextMove } = m;
+			this.drawText(9.5, line / 2, nextMove, "20px serif", "#888888");
+			line++;
+		}
+
+		if (!model.board.isLegalBoard(model.turn)) {
+			this.drawText(model.board.width / 2 - 1.5, -1.2, "invalid board", "20px serif", "#880000");			
+		}
 	}
 }
