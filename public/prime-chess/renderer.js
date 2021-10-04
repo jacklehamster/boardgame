@@ -125,6 +125,7 @@ class PrimeChessRenderer extends GridRenderer {
 		this.clear();
 
 		//	Bottom layer
+		const playerTurn = model.isHumanPlayer(model.turn);
 
 		if (model.turn === 1) {
 			this.drawTurn(475, 400, 10, model.turn);
@@ -138,7 +139,7 @@ class PrimeChessRenderer extends GridRenderer {
 		let possiblePath = null;
 
 		const moves = {};
-		if (model.unitCanPlay(cellHighlighted) && model.board.possibleMoves(cellHighlighted, moves)) {
+		if (playerTurn && model.unitCanPlay(cellHighlighted) && model.board.possibleMoves(cellHighlighted, moves)) {
 			this.highlight(cellHighlighted, "hovered");
 			for (let move in moves) {
 				const [from, to] = fromTo(move);
@@ -151,7 +152,7 @@ class PrimeChessRenderer extends GridRenderer {
 
 		const unitHovered = model.board.getCellAtId(cellUnderMouse);
 
-		this.drawGrid();
+		this.drawGrid(true);
 
 		// const totalCoverage = {};
 		// model.board.getTotalCoverage(model.turn, totalCoverage);
@@ -166,17 +167,19 @@ class PrimeChessRenderer extends GridRenderer {
 		// }
 
 		const totalThreats = {};
-		model.board.getTotalCoverage(opponentTurn(model.turn), totalThreats);
-		for (let move in totalThreats) {
-			const [from, to] = fromTo(move);
-			const { x, y } = id2location(to);
-			const unit = model.board.getCell(x, y);
-			if (!unit || unit.player !== model.turn) {
-				this.drawCircle(x, y, .5, "#eeFFdd");
-				this.drawCircle(x, y, .3, "#ddFFdd");
-			}
-			if (unit && unit.player === model.turn && unit.king) {
-				this.highlight(to, "threatened");
+		if (playerTurn) {
+			model.board.getTotalCoverage(opponentTurn(model.turn), totalThreats);
+			for (let move in totalThreats) {
+				const [from, to] = fromTo(move);
+				const { x, y } = id2location(to);
+				const unit = model.board.getCell(x, y);
+				if (!unit || unit.player !== model.turn) {
+					this.drawCircle(x, y, .5, "#eeFFdd");
+					this.drawCircle(x, y, .3, "#ddFFdd");
+				}
+				if (unit && unit.player === model.turn && unit.king) {
+					this.highlight(to, "threatened");
+				}
 			}
 		}
 
@@ -234,12 +237,16 @@ class PrimeChessRenderer extends GridRenderer {
 			}
 		}
 
-		if (model.previousModel) {
+		if (model.gameOver()) {
+			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
+			const label = "[ restart ]";
+			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+		} else if (playerTurn && model.previousModel) {
 			const label = "[ undo ]";
 			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
 		}
 
-		this.setCursor(unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
+		this.setCursor(playerTurn && unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
 
 		model.iterateModels(({nextMove}, index) => {
 			this.drawText(8.5, index / 2, nextMove, "20px serif", "#888888");

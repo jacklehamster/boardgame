@@ -270,7 +270,16 @@ class Board extends Board2d {
 			return true;
 		}
 		if (unit.player === occupyingCell.player) {
-			return !unit.king && !occupyingCell.king && unit.num >= occupyingCell.num;
+			if (unit.king || occupyingCell.king) {
+				return false;
+			}
+			if (unit.num < occupyingCell.num) {
+				return false;
+			}
+			if (unit.num + occupyingCell.num > 5) {
+				return false;
+			}
+			return true;
 		}
 		return true;
 	}
@@ -287,5 +296,12 @@ class Board extends Board2d {
 			}
 		}
 		return true;
+	}
+
+	isTerminalMove(move) {
+		const [from, to] = fromTo(move);
+		const fromUnit = this.getCellAtId(from);
+		const toUnit = this.getCellAtId(to);
+		return fromUnit && toUnit && toUnit.king && toUnit.player !== fromUnit.player;
 	}
 }

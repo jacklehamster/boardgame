@@ -43,7 +43,7 @@ class Board2d {
 	setCells(locations, value) {
 		locations.forEach(loc => {
 			const { x, y } = id2location(loc);
-			this.setCell(x, y, value);
+			this.setCell(x, y, JSON.parse(JSON.stringify(value)));
 		});
 	}
 

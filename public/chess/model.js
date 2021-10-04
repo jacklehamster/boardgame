@@ -1,4 +1,4 @@
-class UnstableModel extends Model {
+class ChessModel extends Model {
 	constructor() {
 		super();
 		this.board = new ChessBoard();
@@ -63,8 +63,8 @@ class UnstableModel extends Model {
 	}
 
 	isHumanPlayer(player) {
-		return true;
-//		return player === 1;
+		// return true;
+		return player === 1;
 	}
 
 	performAction(action) {
@@ -94,19 +94,32 @@ class UnstableModel extends Model {
 
 		this.selectedCell = null;
 		this.board.move(move);
-		console.log(this.getScore(1));
 		this.switchTurn();
 	}
 
 	switchTurn() {
 		this.turn = opponentTurn(this.turn);
+		if (this.onSwitchTurn) {
+			this.onSwitchTurn();
+		}
 	}
 
 	gameOver() {
 		return this.board.getTotalCoverage(this.turn, {}) === 0;
 	}
 
+	getMoves() {
+		const moves = {};
+		this.board.getTotalCoverage(this.turn, moves);
+		const moveList = Object.keys(moves);
+		moveList.sort();
+		return moveList;
+	}
+
 	getScore(player) {
+		if (!player) {
+			player = this.turn;
+		}
 		if (this.gameOver()) {
 			return this.turn === player ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
 		}
@@ -141,7 +154,7 @@ class UnstableModel extends Model {
 			} else if (targetUnit.player === player) {
 				score += 25;
 			} else {
-				score += 50;
+				score += this.getScoreForUnitType(targetUnit.type) / 20;
 			}
 			const { x, y } = id2location(from);
 			score += direction * (y - 3.5);
@@ -152,10 +165,9 @@ class UnstableModel extends Model {
 	getScoreForUnitType(type) {
 		switch (type) {
 			case "pawn":
-				return 100;
-				break;
+				return 300;
 			case "king":
-				return 10000;
+				return 0;
 			case "knight":
 				return 500;
 			case "bishop":

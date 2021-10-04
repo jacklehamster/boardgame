@@ -1,4 +1,4 @@
-class UnstableRenderer extends GridRenderer {
+class ChessRenderer extends GridRenderer {
 	constructor() {
 		super();
 	}

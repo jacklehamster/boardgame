@@ -93,14 +93,16 @@ class GridRenderer extends Renderer {
 		}
 		ctx.stroke();
 
-		ctx.fillStyle = "#888888";
-		ctx.font = '16px serif';
-		for (let r = 0; r < rows; r++) {
-			ctx.fillText('' + (r+1), x - 15, y + (r + .5) * height / rows + 5);
-		}
-		for (let c = 0; c < cols; c++) {
-			ctx.lineTo(x + c * width / cols, y + height);
-			ctx.fillText(String.fromCharCode('A'.charCodeAt(0) + c), x + (c + .5) * width / cols - 5, y - 8);
+		if (includeLegend) {
+			ctx.fillStyle = "#888888";
+			ctx.font = '16px serif';
+			for (let r = 0; r < rows; r++) {
+				ctx.fillText('' + (r+1), x - 15, y + (r + .5) * height / rows + 5);
+			}
+			for (let c = 0; c < cols; c++) {
+				ctx.lineTo(x + c * width / cols, y + height);
+				ctx.fillText(String.fromCharCode('A'.charCodeAt(0) + c), x + (c + .5) * width / cols - 5, y - 8);
+			}
 		}
 	}
 

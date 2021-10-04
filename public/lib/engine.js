@@ -1,7 +1,8 @@
 class Engine {
-	init(model, renderer) {
+	init(model, renderer, brain) {
 		this.model = model;
 		this.renderer = renderer;
+		this.brain = brain || new Brain();
 		document.addEventListener("mousemove", e => {
 			if (this.renderer.setMouse(e.pageX, e.pageY, this.model)) {
 				this.render();
@@ -25,5 +26,21 @@ class Engine {
 
 		model.init();
 		this.render();
+
+
+		const interval = setInterval(() => this.brainThink(), this.brain.thinkPeriod);
+
+		model.onSwitchTurn = () => this.brainThink();
+	}
+
+	brainThink() {
+		this.brain.think(this.model);
+		if (!this.model.isHumanPlayer(this.model.turn)) {
+			const move = this.brain.chooseMove(this.model);
+			if (move) {
+				this.model.performMove(move);
+				this.render();
+			}
+		}		
 	}
 }

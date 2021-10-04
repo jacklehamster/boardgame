@@ -6,7 +6,7 @@ const MOVES = {
 	],
 	knight: [
 		[-1,-2], [1,-2],
-		[-2,-1], [1, 2],
+		[-2,-1], [2, -1],
 		[-2, 1], [2, 1],
 		[-1, 2], [1, 2],
 	],
@@ -136,16 +136,20 @@ class ChessBoard extends Board2d {
 		const direction = player == 1 ? -1 : 1;
 		const list = [];
 		if (direction < 0) {
-			list.push([x, y-1]);
-			if (y === 6 && !this.getCell(x, y-1)) {
-				list.push([x, y-2]);
+			if (!this.getCell(x, y-1)) {
+				list.push([x, y-1]);
+				if (y === 6 && !this.getCell(x, y-2)) {
+					list.push([x, y-2]);
+				}
 			}
 			this.pawnAttackIfCan(player, x-1, y-1, list);
 			this.pawnAttackIfCan(player, x+1, y-1, list);
 		} else {
-			list.push([x, y+1]);
-			if (y === 1 && !this.getCell(x, y+1)) {
-				list.push([x, y+2]);
+			if (!this.getCell(x, y+1)) {
+				list.push([x, y+1]);
+				if (y === 1 && !this.getCell(x, y+2)) {
+					list.push([x, y+2]);
+				}
 			}
 			this.pawnAttackIfCan(player, x-1, y+1, list);
 			this.pawnAttackIfCan(player, x+1, y+1, list);
@@ -235,9 +239,5 @@ class ChessBoard extends Board2d {
 		const fromUnit = this.getCellAtId(from);
 		const toUnit = this.getCellAtId(to);
 		return fromUnit && toUnit && toUnit.type === "king" && toUnit.player !== fromUnit.player;
-	}
-
-	getScore(player) {
-		
 	}
 }

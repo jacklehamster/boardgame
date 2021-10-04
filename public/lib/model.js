@@ -2,6 +2,7 @@ class Model {
 	constructor() {
 		this.previousModel = null;
 		this.nextMove = null;
+		this.id = (Math.random() + "").split(".")[1];
 	}
 
 	init() {
@@ -38,7 +39,7 @@ class Model {
 
 	iterateModels(callback) {
 		let index = 0;
-		for (let m = model.previousModel; m; m = m.previousModel) {
+		for (let m = this.previousModel; m; m = m.previousModel) {
 			callback(m, index);
 			index++;
 		}		
@@ -48,7 +49,8 @@ class Model {
 		return true;
 	}
 
-	getScore() {
+	getScore(player) {
+		console.log(`Override getScore(player)`)
 		return 0;
 	}
 }
