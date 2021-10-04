@@ -58,6 +58,14 @@ class UnstableModel extends Model {
 		}
 	}
 
+	performAction(action) {
+		switch(action) {
+			case "[ restart ]":
+				this.init();
+				break;
+		}
+	}
+
 	performMove(move) {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
@@ -73,5 +81,9 @@ class UnstableModel extends Model {
 
 	switchTurn() {
 		this.turn = opponentTurn(this.turn);
+	}
+
+	gameOver() {
+		return this.board.getTotalCoverage(this.turn, {}) === 0;
 	}
 }

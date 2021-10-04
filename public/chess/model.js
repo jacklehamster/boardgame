@@ -1,11 +1,8 @@
-class PrimeChessModel extends Model {
+class UnstableModel extends Model {
 	constructor() {
 		super();
+		this.board = new ChessBoard();
 		this.turn = 1;
-		this.selectedCell = null;
-		this.hoveredCell = null;
-		this.hoveredButton = null;
-		this.board = new Board();
 	}
 
 	init() {
@@ -13,6 +10,8 @@ class PrimeChessModel extends Model {
 		this.selectedCell = null;
 		this.hoveredCell = null;
 		this.hoveredButton = null;
+		this.previousModel = null;
+		this.nextMove = null;
 		this.board.init();
 	}
 
@@ -23,7 +22,6 @@ class PrimeChessModel extends Model {
 	}
 
 	copy(model) {
-		super.copy(model);
 		this.turn = model.turn;
 		this.selectedCell = model.selectedCell;
 		this.hoveredCell = model.hoveredCell;
@@ -62,20 +60,29 @@ class PrimeChessModel extends Model {
 
 	performAction(action) {
 		switch(action) {
-			case "[ undo ]":
-				this.revert();
-				break;
 			case "[ restart ]":
 				this.init();
 				break;
+			case "[ undo ]":
+				this.revert();
+				break;
 		}
+	}
+
+	revert() {
+		const { previousModel } = this;
+		this.copy(previousModel);
+		this.previousModel = previousModel.previousModel;
 	}
 
 	performMove(move) {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
-		this.saveHistory(move);
-	
+		const previousModel = this.clone();
+		previousModel.nextMove = move;
+		previousModel.previousModel = this.previousModel;
+		this.previousModel = previousModel;
+
 		this.selectedCell = null;
 		this.board.move(move);
 		this.switchTurn();

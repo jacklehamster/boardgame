@@ -143,6 +143,19 @@ class Board2d {
 		return 1;
 	}
 
+	getTotalCoverage(player, moves) {
+		let count = 0;
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const unit = this.getCell(x, y);
+				if (unit && unit.player === player) {
+					count += this.getMoves(x, y, moves);
+				}
+			}
+		}
+		return count;
+	}
+
 	canEnterCell(x, y, unit) {
 		const occupyingCell = this.getCell(x, y);
 		if (!occupyingCell) {

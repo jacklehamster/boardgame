@@ -2,8 +2,31 @@ class GridRenderer extends Renderer {
 	constructor() {
 		super();
 		this.dimensions = [1, 1];
+		this.buttons = [];
 	}
 
+	clear() {
+		super.clear();
+		this.buttons.length = 0;
+	}
+
+	getButtonUnderMouse() {
+		const { ctx, mouse } = this;
+		for (let i = 0; i < this.buttons.length; i++) {
+			const {text, x, y, width, height} = this.buttons[i];
+			if (mouse.x >= x && mouse.x <= x + width && mouse.y >= y && mouse.y <= y + height) {
+				return text;
+			}
+		}
+		return null;
+	}
+
+	click(x, y, model) {
+		super.click(x, y, model);
+		model.click(this.getCellUnderMouse(), this.getButtonUnderMouse());
+		return true;
+	}
+	
 	setDimensions(cols, rows) {
 		this.dimensions = [cols, rows];
 	}
@@ -105,6 +128,11 @@ class GridRenderer extends Renderer {
 			model.hoveredCell = cell;
 			shouldRender = true;
 		}
+		const button = this.getButtonUnderMouse();
+		if (model.hoveredButton !== button) {
+			model.hoveredButton = button;
+			shouldRender = true;
+		}
 		return shouldRender;
 	}
 
@@ -131,6 +159,9 @@ class GridRenderer extends Renderer {
 			case "threatened":
 				ctx.fillStyle = "#00aa00";
 				break;	
+			case "attacking":
+				ctx.fillStyle = "#FF6666";
+				break;	
 			default:
 				ctx.fillStyle = "#FFFF77";	
 		}
@@ -147,5 +178,36 @@ class GridRenderer extends Renderer {
 		ctx.fillStyle = color || "#000000";
 		ctx.font = font || '30px serif';
 		ctx.fillText(string, x + (px + .5) * width / cols - 7, y + (py + .5) * height / cols + 9);
+	}
+
+	drawButton(text, font, color) {
+		const { ctx } = this;
+		const { x, y, width, height } = this.rect;
+		const [cols, rows] = this.dimensions;
+		const string = "" + text;
+		ctx.fillStyle = color || "#000000";
+		ctx.font = font || '30px serif';
+		const ox = x + width / 2 - 30;
+		const oy = y + height + 30;
+		ctx.fillText(string, ox, oy);
+
+		const box = [ox - 8, oy - 20, 80, 30]
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "#fefefe"
+		ctx.beginPath();
+		ctx.rect(box[0], box[1], box[2], box[3]);
+		ctx.stroke();
+
+		this.buttons.push({
+			text,
+			x : box[0],
+			y: box[1],
+			width: box[2],
+			height: box[3],
+		});
+	}
+
+	performAction(action) {
+		console.log(`performAction("${action}")`)
 	}
 }

@@ -1,44 +1,8 @@
 class PrimeChessRenderer extends GridRenderer {
 	constructor() {
 		super();
-		this.buttons = [];
 	}
 
-	clear() {
-		super.clear();
-		this.buttons.length = 0;
-	}
-
-	getButtonUnderMouse() {
-		const { ctx, mouse } = this;
-		for (let i = 0; i < this.buttons.length; i++) {
-			const {text, x, y, width, height} = this.buttons[i];
-			if (mouse.x >= x && mouse.x <= x + width && mouse.y >= y && mouse.y <= y + height) {
-				return text;
-			}
-		}
-		return null;
-	}
-
-	setMouse(x, y, model) {
-		let shouldRender = false;
-		if (super.setMouse(x, y, model)) {
-			shouldRender = true;
-		}
-		const button = this.getButtonUnderMouse();
-		if (model.hoveredButton !== button) {
-			model.hoveredButton = button;
-			shouldRender = true;
-		}
-		return shouldRender;
-	}
-
-	click(x, y, model) {
-		super.click(x, y, model);
-		model.click(this.getCellUnderMouse(), this.getButtonUnderMouse());
-		return true;
-	}
-	
 	getPlayerColor(player, king) {
 		if (king) {
 			return player === 2 ? "#ffaaaa" : "#ffffdd";
@@ -129,33 +93,6 @@ class PrimeChessRenderer extends GridRenderer {
 		ctx.beginPath();
 		ctx.rect(x + (px + .2) * width / cols, y + (py + .2) * height / cols, width / cols * .6, height / rows * .6);
 		ctx.stroke();
-	}
-
-	drawButton(text, font, color) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		const string = "" + text;
-		ctx.fillStyle = color || "#000000";
-		ctx.font = font || '30px serif';
-		const ox = x + width / 2 - 30;
-		const oy = y + height + 30;
-		ctx.fillText(string, ox, oy);
-
-		const box = [ox - 8, oy - 20, 80, 30]
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "#fefefe"
-		ctx.beginPath();
-		ctx.rect(box[0], box[1], box[2], box[3]);
-		ctx.stroke();
-
-		this.buttons.push({
-			text,
-			x : box[0],
-			y: box[1],
-			width: box[2],
-			height: box[3],
-		});
 	}
 
 	drawTriangle(px, py, player, direction) {
@@ -304,11 +241,12 @@ class PrimeChessRenderer extends GridRenderer {
 
 		this.setCursor(unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
 
-		let line = 0;
-		for (let m = model.previousModel; m; m = m.previousModel) {
-			const { nextMove } = m;
-			this.drawText(8.5, line / 2, nextMove, "20px serif", "#888888");
-			line++;
+		model.iterateModels(({nextMove}, index) => {
+			this.drawText(8.5, index / 2, nextMove, "20px serif", "#888888");
+		});
+
+		if (model.gameOver()) {
+			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
 		}
 
 		if (!model.board.isLegalBoard(model.turn)) {

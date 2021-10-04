@@ -263,7 +263,7 @@ class Board extends Board2d {
 		}	
 		return countMoves;	
 	}
-	
+
 	canEnterCell(x, y, unit) {
 		const occupyingCell = this.getCell(x, y);
 		if (!occupyingCell) {

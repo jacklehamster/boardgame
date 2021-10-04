@@ -35,8 +35,10 @@ class UnstableRenderer extends GridRenderer {
 		if (model.unitCanPlay(cellHighlighted) && model.board.possibleMoves(cellHighlighted, moves)) {
 			for (let move in moves) {
 				const [from, to] = fromTo(move);
-				this.boldCell(to, "#00aa00");
-				this.highlight(to, "possible-move-2");
+				const unitAtDestination = model.board.getCellAtId(to);
+				const attacking = unitAtDestination && unitAtDestination.player !== model.turn;
+				this.boldCell(to, attacking ? "#aa0000" : "#00aa00");
+				this.highlight(to, unitAtDestination && unitAtDestination.player !== model.turn ? "attacking" : "possible-move-2");
 				if (to === cellUnderMouse) {
 					possiblePath = moves[move];
 				}
@@ -82,8 +84,14 @@ class UnstableRenderer extends GridRenderer {
 
 		if (model.gameOver()) {
 			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
-			this.drawButton("[ restart ]", "20px serif", model.hoveredButton === "[ restart ]" ? "#3333FF" : "#888888")
+			const label = "[ restart ]";
+			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+		} else if (model.previousModel) {
+			const label = "[ undo ]";
+			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
 		}
+
+
 
 		if (!model.board.isLegalBoard(model.turn)) {
 			this.drawText(model.board.width / 2 - 1.5, -1.2, "invalid board", "20px serif", "#880000");			
