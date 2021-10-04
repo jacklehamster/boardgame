@@ -1,7 +1,7 @@
 class Model {
 	constructor() {
 		this.previousModel = null;
-		this.nextMove = null;		
+		this.nextMove = null;
 	}
 
 	init() {
@@ -17,6 +17,10 @@ class Model {
 
 	copy(model) {
 		console.log(`Override copy(model)`)
+	}
+
+	performMove(move) {
+		console.log(`Override performMove("${move}")`)
 	}
 
 	revert() {
@@ -38,5 +42,13 @@ class Model {
 			callback(m, index);
 			index++;
 		}		
+	}
+
+	isHumanPlayer(player) {
+		return true;
+	}
+
+	getScore() {
+		return 0;
 	}
 }

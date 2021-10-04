@@ -133,7 +133,7 @@ class Board2d {
 		if (cellId === toId) {
 			return 0;
 		}
-		if (!this.isLegalMove(move)) {
+		if (!this.isTerminalMove(move) && !this.isLegalMove(move)) {
 			return 0;
 		}
 		if (result[move]) {
@@ -156,6 +156,19 @@ class Board2d {
 		return count;
 	}
 
+	getAllUnits() {
+		const units = [];
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const unit = this.getCell(x, y);
+				if (unit) {
+					units.push(unit);
+				}
+			}
+		}
+		return units;		
+	}
+
 	canEnterCell(x, y, unit) {
 		const occupyingCell = this.getCell(x, y);
 		if (!occupyingCell) {
@@ -166,6 +179,10 @@ class Board2d {
 
 	isLegalBoard(turn) {
 		return true;
+	}
+
+	isTerminalMove(move) {
+		return false;
 	}
 
 	isLegalMove(move) {

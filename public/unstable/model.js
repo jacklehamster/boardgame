@@ -40,6 +40,10 @@ class UnstableModel extends Model {
 			return;
 		}
 
+		if (!this.isHumanPlayer(this.turn)) {
+			return;
+		}
+
 		if (cell === this.selectedCell) {
 			this.selectedCell = null;
 		} else {
