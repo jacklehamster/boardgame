@@ -16,6 +16,9 @@ class Model {
 		return newModel;
 	}
 
+	setValidateLegal(validateLegal) {
+	}
+
 	copy(model) {
 		console.log(`Override copy(model)`)
 	}
@@ -52,5 +55,13 @@ class Model {
 	getScore(player) {
 		console.log(`Override getScore(player)`)
 		return 0;
+	}
+
+	countMoves() {
+		let c = 0;
+		for (let m = this; m; m = m.previousModel) {
+			c++;
+		}	
+		return c;
 	}
 }

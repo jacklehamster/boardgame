@@ -253,11 +253,9 @@ class Board extends Board2d {
 				countMoves += this.addIfValid(cellId, x, y + dy, unit, result, filter, `-${cellId}`);
 			}
 		} else if (king) {
-			for (let dy = -1; dy <= 1; dy++) {
-				for (let dx = -1; dx <= 1; dx++) {
-					countMoves += this.addIfValid(cellId, x + dx, y + dy, unit, result, filter, `-${cellId}`);					
-				}
-			}
+			MOVE4.forEach(({dx, dy}) => {
+				countMoves += this.addIfValid(cellId, x + dx, y + dy, unit, result, filter, `-${cellId}`);
+			});
 		} else {
 			countMoves += this.getMoveHelper(cellId, x, y, unit, result, filter);
 		}	
@@ -303,5 +301,14 @@ class Board extends Board2d {
 		const fromUnit = this.getCellAtId(from);
 		const toUnit = this.getCellAtId(to);
 		return fromUnit && toUnit && toUnit.king && toUnit.player !== fromUnit.player;
+	}
+
+	setCell(x, y, unit) {
+		super.setCell(x, y, unit);
+		if (unit && unit.pawn) {
+			if (unit.player == 1 && y == 0 || unit.player == 2 && y == 7) {
+				unit.pawn = false;
+			}
+		}
 	}
 }

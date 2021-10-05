@@ -4,6 +4,7 @@ class Board2d {
 		this.height = height;
 		this.cells = new Array(this.width * this.height);		
 		this.cachedMoves = {};
+		this.validateLegal = true;
 	}
 
 	init() {
@@ -11,6 +12,7 @@ class Board2d {
 			this.cells[i] = null;
 		}
 		this.cachedMoves = {};
+		this.validateLegal = true;
 	}
 
 	copy(board) {
@@ -59,7 +61,7 @@ class Board2d {
 		const toUnit = this.getCell(to.x, to.y);
 		this.setCell(from.x, from.y, null);
 		this.setCell(to.x, to.y, this.mergeUnit(fromUnit, toUnit));
-		this.cachedMoves = {};		
+		this.cachedMoves = {};
 	}
 
 	mergeUnit(sourceUnit, targetUnit) {
@@ -133,7 +135,7 @@ class Board2d {
 		if (cellId === toId) {
 			return 0;
 		}
-		if (!this.isTerminalMove(move) && !this.isLegalMove(move)) {
+		if (this.validateLegal && !this.isTerminalMove(move) && !this.isLegalMove(move)) {
 			return 0;
 		}
 		if (result[move]) {

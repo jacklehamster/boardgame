@@ -1,20 +1,25 @@
 class MinMaxBrain extends Brain {
-	constructor(depth) {
-		super(20);
+	constructor(depth, iterations, period) {
+		super(period || 10);
 		this.thoughts = [];
 		this.seenModel = {};
 		this.root = null;
 		this.move = null;
 		this.depth = depth || 3;
+		this.iterations = iterations || 10;
+	}
+
+	clear() {
+		this.thoughts = [];
+		this.seenModel = {};
+		this.root = null;
+		this.move = null;		
 	}
 
 	chooseMove(model) {
 		if (model.isHumanPlayer(model.turn)) {
 			if (this.thoughts) {
-				this.thoughts = [];
-				this.seenModel = {};
-				this.root = null;
-		this.move = null;
+				this.clear();
 			}
 			return null;
 		}
@@ -23,12 +28,9 @@ class MinMaxBrain extends Brain {
 	}
 
 	think(model) {
-		if (model.isHumanPlayer(model.turn)) {
+		if (model.isHumanPlayer(model.turn) || model.gameOver()) {
 			if (this.thoughts) {
-				this.thoughts = [];
-				this.seenModel = {};
-				this.root = null;
-				this.move = null;
+				this.clear();
 			}
 			return;
 		}
@@ -46,7 +48,9 @@ class MinMaxBrain extends Brain {
 			});
 		}
 
-		this.processThoughts();
+		for (let i = 0; i < this.iterations; i++) {
+			this.processThoughts();
+		}
 	}
 
 	calculateBestMove(thought) {
@@ -99,7 +103,10 @@ class MinMaxBrain extends Brain {
 			const moves = model.getMoves();
 			moves.forEach(move => {
 				const newModel = model.clone();
+				newModel.setValidateLegal(false);
+				newModel.variant = this.root.player == 1;
 				newModel.performMove(move);
+				newModel.setSaveHistory(false);
 				const score = model.getScore(this.root.player);
 				const newThought = {
 					score,

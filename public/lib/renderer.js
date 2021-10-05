@@ -48,6 +48,11 @@ class Renderer {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	}
 
+	backgroundColor(color) {
+		this.ctx.fillStyle = color;
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	}
+
 	setMouse(pageX, pageY, model) {
 		const x = pageX - this.canvas.offsetLeft, y = pageY - this.canvas.offsetTop;
 		this.mouse.x = x;

@@ -5,14 +5,17 @@ class PrimeChessModel extends Model {
 		this.selectedCell = null;
 		this.hoveredCell = null;
 		this.hoveredButton = null;
+		this.canSaveHistory = true;
 		this.board = new Board();
 	}
 
 	init() {
+		super.init();
 		this.turn = 1;
 		this.selectedCell = null;
 		this.hoveredCell = null;
 		this.hoveredButton = null;
+		this.canSaveHistory = true;
 		this.board.init();
 	}
 
@@ -20,6 +23,10 @@ class PrimeChessModel extends Model {
 		const newModel = new (this.constructor)();
 		newModel.copy(this);
 		return newModel;
+	}
+
+	setValidateLegal(validateLegal) {
+		this.board.validateLegal = validateLegal;
 	}
 
 	copy(model) {
@@ -66,7 +73,9 @@ class PrimeChessModel extends Model {
 	performAction(action) {
 		switch(action) {
 			case "[ undo ]":
-				this.revert();
+				do {
+					this.revert();
+				} while (this.previousModel && !this.isHumanPlayer(this.turn));
 				break;
 			case "[ restart ]":
 				this.init();
@@ -74,10 +83,16 @@ class PrimeChessModel extends Model {
 		}
 	}
 
+	setSaveHistory(save) {
+		this.canSaveHistory = save;
+	}
+
 	performMove(move) {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
-		this.saveHistory(move);
+		if (this.canSaveHistory) {
+			this.saveHistory(move);
+		}
 	
 		this.selectedCell = null;
 		this.board.move(move);
@@ -89,11 +104,16 @@ class PrimeChessModel extends Model {
 	}
 
 	gameOver() {
+		const units = this.board.getAllUnits();
+		if (units.filter(unit => unit.player === this.turn).length <= 1) {
+			return true;
+		}
 		return this.board.getTotalCoverage(this.turn, {}) === 0;
 	}
 
 	isHumanPlayer(player) {
-		// return true;
+//		return false;
+//		 return true;
 		return player === 1;
 	}
 
@@ -121,13 +141,23 @@ class PrimeChessModel extends Model {
 	}
 
 	getUnitScore(player) {
+		const { variant } = this;
+		const unitValue = variant ? 300 : 320;
+		const eachUnit = variant ? 150 : 150;
+		const pawnMultiplier = variant ? .2 : .2;
 		let score = 0;
+		let foeScore = 0;
 		const units = this.board.getAllUnits();
 		units.forEach(unit => {
-			const multiplier = unit.player === player ? 1 : -1;
-			score += multiplier * (unit.pawn ? 1 : unit.num * 200);
+			if (unit.player === player) {
+				score += (unit.pawn ? pawnMultiplier : unit.num * unitValue) + eachUnit;
+			} else {
+				foeScore += (unit.pawn ? pawnMultiplier : unit.num * unitValue) + eachUnit;
+			}
 		});
-		return score;
+		const bonus = (score > foeScore ? 1000 * score / foeScore : -1000 * foeScore / score);
+
+		return (score - foeScore) + bonus * (Math.random() + 5) / 5;
 	}
 
 	getCoverageScoreForPlayer(player, turn) {
@@ -139,11 +169,11 @@ class PrimeChessModel extends Model {
 			const [from, to] = fromTo(move);
 			const targetUnit = this.board.getCellAtId(to);
 			if (!targetUnit) {
-				score += 20;
+				score += 10;
 			} else if (targetUnit.player === player) {
-				score += 25;
+				score += 15;
 			} else {
-				score += targetUnit.num * 50;
+				score += targetUnit.num * 20;
 			}
 			const { x, y } = id2location(from);
 			score += direction * (y - 3.5);

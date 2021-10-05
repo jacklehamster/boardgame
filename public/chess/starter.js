@@ -2,7 +2,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	const engine = new Engine();
 	const model = new ChessModel();
 	const renderer = new ChessRenderer();
-	const brain = new MinMaxBrain();
+	const brain = new MinMaxBrain(3, 100, 10);
 
 	engine.init(model, renderer, brain);
 	window.model = model;

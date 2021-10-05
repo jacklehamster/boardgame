@@ -10,4 +10,7 @@ class Brain {
 
 	think(model) {
 	}
+
+	clear() {
+	}
 }

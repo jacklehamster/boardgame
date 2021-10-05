@@ -30,7 +30,11 @@ class Engine {
 
 		const interval = setInterval(() => this.brainThink(), this.brain.thinkPeriod);
 
-		model.onSwitchTurn = () => this.brainThink();
+		model.onSwitchTurn = () => {
+			setTimeout(() => {
+				this.brainThink();
+			}, 10);
+		}
 	}
 
 	brainThink() {
@@ -40,6 +44,7 @@ class Engine {
 			if (move) {
 				this.model.performMove(move);
 				this.render();
+				this.brain.clear();
 			}
 		}		
 	}

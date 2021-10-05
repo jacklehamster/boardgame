@@ -124,6 +124,11 @@ class PrimeChessRenderer extends GridRenderer {
 		this.setDimensions(model.board.width, model.board.height);
 		this.clear();
 
+		const isGameOver = model.gameOver();
+		if (isGameOver) {
+			this.backgroundColor("#ffdddd");
+		}
+
 		//	Bottom layer
 		const playerTurn = model.isHumanPlayer(model.turn);
 
@@ -166,6 +171,7 @@ class PrimeChessRenderer extends GridRenderer {
 		// 	}
 		// }
 
+
 		const totalThreats = {};
 		if (playerTurn) {
 			model.board.getTotalCoverage(opponentTurn(model.turn), totalThreats);
@@ -174,8 +180,8 @@ class PrimeChessRenderer extends GridRenderer {
 				const { x, y } = id2location(to);
 				const unit = model.board.getCell(x, y);
 				if (!unit || unit.player !== model.turn) {
-					this.drawCircle(x, y, .5, "#eeFFdd");
-					this.drawCircle(x, y, .3, "#ddFFdd");
+					this.drawCircle(x, y, .5, isGameOver ? "#FFeedd" : "#eeFFdd");
+					this.drawCircle(x, y, .3, isGameOver ? "#FFdddd" : "#ddFFdd");
 				}
 				if (unit && unit.player === model.turn && unit.king) {
 					this.highlight(to, "threatened");
@@ -237,8 +243,9 @@ class PrimeChessRenderer extends GridRenderer {
 			}
 		}
 
-		if (model.gameOver()) {
-			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
+		if (isGameOver) {
+			this.drawText(model.board.width / 2 - 1, -1.2, "game over", "20px serif", "#880000");			
+			this.drawText(model.board.width - 2, -1.5, model.countMoves() + " moves", "10px serif", "#880000");			
 			const label = "[ restart ]";
 			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
 		} else if (playerTurn && model.previousModel) {
@@ -251,10 +258,6 @@ class PrimeChessRenderer extends GridRenderer {
 		model.iterateModels(({nextMove}, index) => {
 			this.drawText(8.5, index / 2, nextMove, "20px serif", "#888888");
 		});
-
-		if (model.gameOver()) {
-			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
-		}
 
 		if (!model.board.isLegalBoard(model.turn)) {
 			this.drawText(model.board.width / 2 - 1.5, -1.2, "invalid board", "20px serif", "#880000");			

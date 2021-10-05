@@ -229,4 +229,11 @@ class ChessBoard extends Board2d {
 		}
 		return null;
 	}
+
+	isTerminalMove(move) {
+		const [from, to] = fromTo(move);
+		const fromUnit = this.getCellAtId(from);
+		const toUnit = this.getCellAtId(to);
+		return fromUnit && toUnit && toUnit.type === "king" && toUnit.player !== fromUnit.player;
+	}
 }

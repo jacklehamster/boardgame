@@ -21,6 +21,10 @@ class ChessModel extends Model {
 		return newModel;
 	}
 
+	setValidateLegal(validateLegal) {
+		this.board.validateLegal = validateLegal;
+	}
+
 	copy(model) {
 		this.turn = model.turn;
 		this.selectedCell = model.selectedCell;
@@ -63,8 +67,8 @@ class ChessModel extends Model {
 	}
 
 	isHumanPlayer(player) {
-		// return true;
-		return player === 1;
+		 return false;
+		// return player === 1;
 	}
 
 	performAction(action) {
@@ -73,7 +77,9 @@ class ChessModel extends Model {
 				this.init();
 				break;
 			case "[ undo ]":
-				this.revert();
+				do {
+					this.revert();
+				} while (this.previousModel && !this.isHumanPlayer(this.turn));
 				break;
 		}
 	}
