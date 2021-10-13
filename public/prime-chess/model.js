@@ -6,6 +6,7 @@ class PrimeChessModel extends Model {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
 		this.canSaveHistory = true;
+		this.returnUndo = false;
 		this.board = new Board();
 	}
 
@@ -16,6 +17,7 @@ class PrimeChessModel extends Model {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
 		this.canSaveHistory = true;
+		this.returnUndo = false;
 		this.board.init();
 	}
 
@@ -27,6 +29,14 @@ class PrimeChessModel extends Model {
 
 	setValidateLegal(validateLegal) {
 		this.board.validateLegal = validateLegal;
+	}
+
+	isValidateLegal() {
+		return this.board.validateLegal;;
+	}
+
+	isLegalMove(move) {
+		return this.board.isLegalMove(move);
 	}
 
 	copy(model) {
@@ -95,8 +105,9 @@ class PrimeChessModel extends Model {
 		}
 	
 		this.selectedCell = null;
-		this.board.move(move);
+		const undo = this.board.move(move, this.returnUndo);
 		this.switchTurn();
+		return undo;
 	}
 
 	switchTurn() {
@@ -108,13 +119,16 @@ class PrimeChessModel extends Model {
 		if (units.filter(unit => unit.player === this.turn).length <= 1) {
 			return true;
 		}
-		return this.board.getTotalCoverage(this.turn, {}) === 0;
+		const wasValidateLegal = this.isValidateLegal();
+		const isGameOver = this.board.getTotalCoverage(this.turn, {}) === 0;
+		this.setValidateLegal(wasValidateLegal);
+		return isGameOver;
 	}
 
 	isHumanPlayer(player) {
-//		return false;
+		 return false;
 //		 return true;
-		return player === 1;
+		// return player === 1;
 	}
 
 	getMoves() {
@@ -169,7 +183,7 @@ class PrimeChessModel extends Model {
 			const [from, to] = fromTo(move);
 			const targetUnit = this.board.getCellAtId(to);
 			if (!targetUnit) {
-				score += 10;
+				score += 15;
 			} else if (targetUnit.player === player) {
 				score += 15;
 			} else {

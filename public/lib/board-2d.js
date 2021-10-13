@@ -53,15 +53,27 @@ class Board2d {
 		return x < 0 || x >= this.width || y < 0 || y >= this.height;
 	}
 
-	move(moveText) {
+	move(moveText, returnUndo) {
 		const [fromCellId, toCellId] = fromTo(moveText);
 		const from = id2location(fromCellId);
 		const to = id2location(toCellId);
 		const fromUnit = this.getCell(from.x, from.y);
 		const toUnit = this.getCell(to.x, to.y);
+
+		let undo = null;
+		if (returnUndo) {
+			const restoreFrom = JSON.parse(JSON.stringify(fromUnit));
+			const restoreTo = JSON.parse(JSON.stringify(toUnit));
+			undo = () => {
+				this.setCell(from.x, from.y, restoreFrom);
+				this.setCell(to.x, to.y, restoreTo);
+			};
+		}
+
 		this.setCell(from.x, from.y, null);
 		this.setCell(to.x, to.y, this.mergeUnit(fromUnit, toUnit));
 		this.cachedMoves = {};
+		return undo;
 	}
 
 	mergeUnit(sourceUnit, targetUnit) {

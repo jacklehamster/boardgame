@@ -7,6 +7,7 @@ class MinMaxBrain extends Brain {
 		this.move = null;
 		this.depth = depth || 3;
 		this.iterations = iterations || 10;
+		this.method = "BFS";
 	}
 
 	clear() {
@@ -35,8 +36,13 @@ class MinMaxBrain extends Brain {
 			return;
 		}
 
+		if (this.method === "DFS") {
+			this.move = this.dfs(model, model.turn);
+			return;
+		}
 
 		if (!this.seenModel[model.id]) {
+			this.thoughtStart = new Date().getTime();
 			this.seenModel[model.id] = model;
 			this.thoughts.push(this.root = {
 				player: model.turn,
@@ -48,9 +54,78 @@ class MinMaxBrain extends Brain {
 			});
 		}
 
+		const time = new Date().getTime();
 		for (let i = 0; i < this.iterations; i++) {
 			this.processThoughts();
+			if (new Date().getTime() - time > 50) {
+				break;
+			}
 		}
+	}
+
+	dfs(model, player) {
+		const startTime = new Date().getTime();
+
+		const newModel = model.clone();
+		newModel.setValidateLegal(false);
+		newModel.variant = player == 1;
+		newModel.setSaveHistory(false);
+		newModel.returnUndo = true;
+
+		const moves = newModel.getMoves();
+		const turn = newModel.turn;
+		let bestScore = turn === player ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+		let bestMove = null;
+
+		moves.forEach(move => {
+			if (!newModel.isLegalMove(move)) {
+				return;
+			}
+			const undo = newModel.performMove(move);
+			const score = this.dfsHelper(newModel, 1, player);
+			if (turn === player) {
+				if (score > bestScore) {
+					bestScore = score;
+					bestMove = move;
+				}
+			} else {
+				if (score < bestScore) {
+					bestScore = score;
+					bestMove = move;
+				}
+			}
+			undo();
+		});
+
+		console.log(bestMove, bestScore, new Date().getTime() - startTime);
+
+		return bestMove;
+	}
+
+	dfsHelper(model, depth, player) {
+		if (depth >= this.depth || model.gameOver()) {
+			return model.getScore(player);
+		}
+
+		const moves = model.getMoves();
+		const turn = model.turn;
+		let bestScore = turn === player ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+
+		moves.forEach(move => {
+			const undo = model.performMove(move);
+			const score = this.dfsHelper(model, depth + 1, player);
+			if (turn === player) {
+				if (score > bestScore) {
+					bestScore = score;
+				}
+			} else {
+				if (score < bestScore) {
+					bestScore = score;
+				}
+			}
+			undo();
+		});
+		return bestScore;
 	}
 
 	calculateBestMove(thought) {
@@ -89,11 +164,12 @@ class MinMaxBrain extends Brain {
 		}
 		const topModel = this.thoughts[0];
 		if (topModel) {
-			if (topModel.depth >= this.depth) {
+			const timeEllapsed = (new Date().getTime() - this.thoughtStart);
+			if (topModel.depth >= this.depth || timeEllapsed >= 30000) {
 				if (!this.move) {
 					const thought = this.calculateBestMove(this.root);
 					this.move = thought.move;
-					console.log(thought.move, thought.score);
+					console.log(thought.move, thought.score, timeEllapsed / 1000 + "s");
 				}
 				return;
 			}
@@ -105,8 +181,11 @@ class MinMaxBrain extends Brain {
 				const newModel = model.clone();
 				newModel.setValidateLegal(false);
 				newModel.variant = this.root.player == 1;
-				newModel.performMove(move);
 				newModel.setSaveHistory(false);
+				newModel.performMove(move);
+				if (newModel.gameOver()) {
+					return;
+				}
 				const score = model.getScore(this.root.player);
 				const newThought = {
 					score,

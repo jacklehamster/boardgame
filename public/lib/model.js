@@ -19,6 +19,14 @@ class Model {
 	setValidateLegal(validateLegal) {
 	}
 
+	isValidateLegal() {
+		return false;
+	}
+
+	isLegalMove(move) {
+		return true;
+	}
+
 	copy(model) {
 		console.log(`Override copy(model)`)
 	}
