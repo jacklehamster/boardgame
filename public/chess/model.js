@@ -67,8 +67,8 @@ class ChessModel extends Model {
 	}
 
 	isHumanPlayer(player) {
-		 return false;
-		// return player === 1;
+		 // return false;
+		return player === 1;
 	}
 
 	performAction(action) {

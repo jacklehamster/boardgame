@@ -5,7 +5,6 @@ class PrimeChessModel extends Model {
 		this.selectedCell = null;
 		this.hoveredCell = null;
 		this.hoveredButton = null;
-		this.canSaveHistory = true;
 		this.returnUndo = false;
 		this.board = new Board();
 	}
@@ -16,7 +15,6 @@ class PrimeChessModel extends Model {
 		this.selectedCell = null;
 		this.hoveredCell = null;
 		this.hoveredButton = null;
-		this.canSaveHistory = true;
 		this.returnUndo = false;
 		this.board.init();
 	}
@@ -91,10 +89,6 @@ class PrimeChessModel extends Model {
 				this.init();
 				break;
 		}
-	}
-
-	setSaveHistory(save) {
-		this.canSaveHistory = save;
 	}
 
 	performMove(move) {

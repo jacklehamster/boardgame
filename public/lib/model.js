@@ -3,11 +3,13 @@ class Model {
 		this.previousModel = null;
 		this.nextMove = null;
 		this.id = (Math.random() + "").split(".")[1];
+		this.canSaveHistory = true;
 	}
 
 	init() {
 		this.previousModel = null;
 		this.nextMove = null;
+		this.canSaveHistory = true;
 	}
 
 	clone() {
@@ -33,6 +35,10 @@ class Model {
 
 	performMove(move) {
 		console.log(`Override performMove("${move}")`)
+	}
+
+	setSaveHistory(save) {
+		this.canSaveHistory = save;
 	}
 
 	revert() {
