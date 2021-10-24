@@ -24,3 +24,21 @@ function opponentTurn(turn) {
 function fromTo(move) {
 	return move.split("-");
 }
+
+const isPrimeArray = [];
+
+function isPrime(num) {
+	if (typeof(isPrimeArray[num]) !== "undefined") {
+		return isPrimeArray[num];
+	}
+
+	isPrimeArray[num] = true;
+	for (let i = 2; i * i <= num; i++) {
+		if (num % i === 0) {
+			isPrimeArray[num] = false;
+			break;
+		}
+	}
+
+	return isPrimeArray[num];
+}

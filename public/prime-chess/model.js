@@ -2,10 +2,6 @@ class PrimeChessModel extends Model {
 	constructor() {
 		super();
 		this.turn = 1;
-		this.selectedCell = null;
-		this.hoveredCell = null;
-		this.hoveredButton = null;
-		this.returnUndo = false;
 		this.board = new Board();
 	}
 
@@ -16,6 +12,7 @@ class PrimeChessModel extends Model {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
 		this.returnUndo = false;
+		this.humans = [true, true];
 		this.board.init();
 	}
 
@@ -80,13 +77,19 @@ class PrimeChessModel extends Model {
 
 	performAction(action) {
 		switch(action) {
-			case "[ undo ]":
+			case "undo":
 				do {
 					this.revert();
 				} while (this.previousModel && !this.isHumanPlayer(this.turn));
 				break;
-			case "[ restart ]":
+			case "restart":
 				this.init();
+				break;
+			case "player1":
+				this.humans[0] = !this.humans[0];
+				break;
+			case "player2":
+				this.humans[1] = !this.humans[1];
 				break;
 		}
 	}
@@ -120,9 +123,7 @@ class PrimeChessModel extends Model {
 	}
 
 	isHumanPlayer(player) {
-		 return false;
-//		 return true;
-		// return player === 1;
+		 return this.humans[player-1];
 	}
 
 	getMoves() {

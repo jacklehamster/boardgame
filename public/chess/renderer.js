@@ -87,12 +87,15 @@ class ChessRenderer extends GridRenderer {
 		if (model.gameOver()) {
 			this.drawText(model.board.width / 2 - 1.5, -1.2, "game over", "20px serif", "#880000");			
 			const label = "[ restart ]";
-			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+			this.drawButton("restart", label, "20px serif", model.hoveredButton === "restart" ? "#3333FF" : "#888888", "bottom")
 		} else if (playerTurn && model.previousModel) {
 			const label = "[ undo ]";
-			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+			this.drawButton("undo", label, "20px serif", model.hoveredButton === "undo" ? "#3333FF" : "#888888", "bottom")
 		}
 
+
+		this.drawButton("player1", model.isHumanPlayer(1) ? "[ human ]" : "[ cpu ]", "20px serif", model.hoveredButton === "player1" ? "#3333FF" : "#888888", "bottomright");
+		this.drawButton("player2", model.isHumanPlayer(2) ? "[ human ]" : "[ cpu ]", "20px serif", model.hoveredButton === "player2" ? "#3333FF" : "#888888", "topright");
 
 
 		if (!model.board.isLegalBoard(model.turn)) {

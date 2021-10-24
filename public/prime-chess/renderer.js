@@ -11,114 +11,6 @@ class PrimeChessRenderer extends GridRenderer {
 		}
 	}
 
-	drawTurn(x, y, radius, player) {
-		const { ctx } = this;
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "#000000";
-		ctx.fillStyle = this.getPlayerColor(player);
-		ctx.beginPath();
-		ctx.arc(x, y, radius, 0, 2 * Math.PI);
-		ctx.fill();
-		ctx.stroke();		
-	}
-
-	drawCircle(px, py, radius, color) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		ctx.fillStyle = color || "#000000";
-		const cellSize = Math.min(width / cols, height / rows);
-		ctx.beginPath();
-		ctx.arc(x + (px + .5) * width / cols, y + (py + .5) * height / cols, cellSize / 2 * (radius || .5), 0, 2 * Math.PI);
-		ctx.fill();
-	}
-
-	drawUnit(px, py, player) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "#000000";
-		ctx.fillStyle = this.getPlayerColor(player);
-		const cellSize = Math.min(width / cols, height / rows);
-		ctx.beginPath();
-		ctx.arc(x + (px + .5) * width / cols, y + (py + .5) * height / cols, cellSize / 2 * .8, 0, 2 * Math.PI);
-		ctx.fill();
-		ctx.stroke();
-	}
-
-	drawPath(path) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-
-		ctx.lineWidth = 10;
-		ctx.strokeStyle = "#aaDDFF";
-		ctx.beginPath();
-
-		const steps = path.split("-");
-		for (let i = 0; i < steps.length - 1; i++) {
-			const fromId = steps[i];
-			const toId = steps[i+1];
-			const from = id2location(fromId);
-			const to = id2location(toId);
-			const fromX = x + (from.x + .5) * width / cols;
-			const fromY = y + (from.y + .5) * height / rows;
-			const toX = x + (to.x + .5) * width / cols;
-			const toY = y + (to.y + .5) * height / rows;
-			if (i == 0) {
-				ctx.moveTo(fromX, fromY);
-			}
-			ctx.lineTo(toX, toY);
-		}
-		ctx.stroke();
-
-		ctx.lineWidth = 5;
-		ctx.strokeStyle = "#aaaaFF";
-		ctx.stroke();
-	}
-
-	drawRect(px, py, player) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "#000000";
-		ctx.fillStyle = this.getPlayerColor(player, true);
-		const cellSize = Math.min(width / cols, height / rows);
-		ctx.beginPath();
-		ctx.rect(x + (px + .1) * width / cols, y + (py + .1) * height / cols, width / cols * .8, height / rows * .8);
-		ctx.fill();
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.rect(x + (px + .2) * width / cols, y + (py + .2) * height / cols, width / cols * .6, height / rows * .6);
-		ctx.stroke();
-	}
-
-	drawTriangle(px, py, player, direction) {
-		const { ctx } = this;
-		const { x, y, width, height } = this.rect;
-		const [cols, rows] = this.dimensions;
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "#000000";
-		ctx.fillStyle = this.getPlayerColor(player);
-		const cellSize = Math.min(width / cols, height / rows);
-		ctx.beginPath();
-		if (direction >= 0) {
-			ctx.moveTo(x + (px + .5) * width / cols, y + (py + .9) * height / cols);
-			ctx.lineTo(x + (px + .1) * width / cols, y + (py + .1) * height / cols);
-			ctx.lineTo(x + (px + .9) * width / cols, y + (py + .1) * height / cols);
-			ctx.lineTo(x + (px + .5) * width / cols, y + (py + .9) * height / cols);
-		} else {
-			ctx.moveTo(x + (px + .5) * width / cols, y + (py + .1) * height / cols);
-			ctx.lineTo(x + (px + .1) * width / cols, y + (py + .9) * height / cols);
-			ctx.lineTo(x + (px + .9) * width / cols, y + (py + .9) * height / cols);
-			ctx.lineTo(x + (px + .5) * width / cols, y + (py + .1) * height / cols);
-		}
-		ctx.fill();
-		ctx.stroke();		
-	}
-
 	async render(model) {
 		this.setRect(50, 50, 400, 400);
 		this.setDimensions(model.board.width, model.board.height);
@@ -247,16 +139,21 @@ class PrimeChessRenderer extends GridRenderer {
 			this.drawText(model.board.width / 2 - 1, -1.2, "game over", "20px serif", "#880000");			
 			this.drawText(model.board.width - 2, -1.5, model.countMoves() + " moves", "10px serif", "#880000");			
 			const label = "[ restart ]";
-			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+			this.drawButton("restart", label, "20px serif", model.hoveredButton === "restart" ? "#3333FF" : "#888888", "bottom")
 		} else if (playerTurn && model.previousModel) {
 			const label = "[ undo ]";
-			this.drawButton(label, "20px serif", model.hoveredButton === label ? "#3333FF" : "#888888")
+			this.drawButton("undo", label, "20px serif", model.hoveredButton === "undo" ? "#3333FF" : "#888888", "bottom")
 		}
+
+		this.drawButton("player1", model.isHumanPlayer(1) ? "[ human ]" : "[ cpu ]", "20px serif", model.hoveredButton === "player1" ? "#3333FF" : "#888888", "bottomright");
+		this.drawButton("player2", model.isHumanPlayer(2) ? "[ human ]" : "[ cpu ]", "20px serif", model.hoveredButton === "player2" ? "#3333FF" : "#888888", "topright");
 
 		this.setCursor(playerTurn && unitHovered && unitHovered.player === model.turn || model.hoveredButton ? "pointer" : "auto");
 
 		model.iterateModels(({nextMove}, index) => {
-			this.drawText(8.5, index / 2, nextMove, "20px serif", "#888888");
+			if (index < 15) {
+				this.drawText(8.5, index / 2, nextMove, "20px serif", index < 13 ? "#888888" : index < 14 ? "#aaaaaa" : "#dddddd");
+			}
 		});
 
 		if (!model.board.isLegalBoard(model.turn)) {

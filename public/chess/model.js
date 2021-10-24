@@ -12,6 +12,7 @@ class ChessModel extends Model {
 		this.hoveredButton = null;
 		this.previousModel = null;
 		this.nextMove = null;
+		this.humans = [true, true];
 		this.board.init();
 	}
 
@@ -67,19 +68,24 @@ class ChessModel extends Model {
 	}
 
 	isHumanPlayer(player) {
-		 // return false;
-		return player === 1;
+		return this.humans[player-1];
 	}
 
 	performAction(action) {
 		switch(action) {
-			case "[ restart ]":
+			case "restart":
 				this.init();
 				break;
-			case "[ undo ]":
+			case "undo":
 				do {
 					this.revert();
 				} while (this.previousModel && !this.isHumanPlayer(this.turn));
+				break;
+			case "player1":
+				this.humans[0] = !this.humans[0];
+				break;
+			case "player2":
+				this.humans[1] = !this.humans[1];
 				break;
 		}
 	}
