@@ -12,7 +12,7 @@ class ChessModel extends Model {
 		this.hoveredButton = null;
 		this.previousModel = null;
 		this.nextMove = null;
-		this.humans = [true, true];
+		this.humans = JSON.parse(localStorage.getItem("humans") || "[true, true]");
 		this.board.init();
 	}
 
@@ -83,9 +83,11 @@ class ChessModel extends Model {
 				break;
 			case "player1":
 				this.humans[0] = !this.humans[0];
+				localStorage.setItem("humans", JSON.stringify(this.humans));
 				break;
 			case "player2":
 				this.humans[1] = !this.humans[1];
+				localStorage.setItem("humans", JSON.stringify(this.humans));
 				break;
 		}
 	}
@@ -189,5 +191,9 @@ class ChessModel extends Model {
 			case "queen":
 				return 2000;	
 		}
+	}
+
+	thinkHard() {
+		return true;
 	}
 }

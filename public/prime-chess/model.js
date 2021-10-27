@@ -12,7 +12,7 @@ class PrimeChessModel extends Model {
 		this.hoveredCell = null;
 		this.hoveredButton = null;
 		this.returnUndo = false;
-		this.humans = [true, true];
+		this.humans = JSON.parse(localStorage.getItem("humans") || "[true, true]");
 		this.board.init();
 	}
 
@@ -87,9 +87,11 @@ class PrimeChessModel extends Model {
 				break;
 			case "player1":
 				this.humans[0] = !this.humans[0];
+				localStorage.setItem("humans", JSON.stringify(this.humans));
 				break;
 			case "player2":
 				this.humans[1] = !this.humans[1];
+				localStorage.setItem("humans", JSON.stringify(this.humans));
 				break;
 		}
 	}

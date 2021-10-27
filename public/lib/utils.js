@@ -27,6 +27,14 @@ function fromTo(move) {
 
 const isPrimeArray = [];
 
+function numCode(nums) {
+	let num = 0;
+	for (let i = 0; i < nums.length; i++) {
+		num |= 1 << (nums[i] - 1);
+	}
+	return num;
+}
+
 function isPrime(num) {
 	if (typeof(isPrimeArray[num]) !== "undefined") {
 		return isPrimeArray[num];

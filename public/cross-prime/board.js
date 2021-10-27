@@ -1,6 +1,6 @@
 class Board extends Board2d {
 	constructor() {
-		super(3, 3);
+		super(4,4);
 		this.nextNumber = 1;
 	}
 
@@ -54,5 +54,18 @@ class Board extends Board2d {
 			}
 		}
 		return primes;
+	}
+
+	getBoardCode(shifted) {
+		const moves = [];
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const unit = this.getCell(x, y);
+				if (unit) {
+					moves[unit - 1] = location2id(x, y);
+				}
+			}
+		}
+		return moves.join(",");
 	}
 }

@@ -78,4 +78,8 @@ class Model {
 		}	
 		return c;
 	}
+
+	thinkHard() {
+		return true;
+	}
 }

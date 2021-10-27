@@ -1,8 +1,9 @@
 class Engine {
-	init(model, renderer, brain) {
+	init(model, renderer, brain, dumbBrain) {
 		this.model = model;
 		this.renderer = renderer;
 		this.brain = brain || new Brain();
+		this.dumbBrain = dumbBrain || new RandomBrain();
 		document.addEventListener("mousemove", e => {
 			if (this.renderer.setMouse(e.pageX, e.pageY, this.model)) {
 				this.render();
@@ -46,6 +47,13 @@ class Engine {
 				this.render();
 				this.brain.clear();
 			}
-		}		
+		} else {
+			const move = this.dumbBrain.chooseMove(this.model);
+			if (move) {
+				this.model.performMove(move);
+				this.render();
+				this.dumbBrain.clear();
+			}
+		}
 	}
 }

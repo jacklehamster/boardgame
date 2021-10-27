@@ -7,7 +7,7 @@ class ShallowBrain extends Brain {
 
 	chooseMove(model) {
 		if (model.isHumanPlayer(model.turn)) {
-			return null;
+//			return null;
 		}
 		const moves = model.getMoves();
 		let bestScore = Number.MIN_SAFE_INTEGER;
