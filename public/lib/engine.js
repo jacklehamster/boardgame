@@ -48,12 +48,12 @@ class Engine {
 				this.brain.clear();
 			}
 		} else {
-			const move = this.dumbBrain.chooseMove(this.model);
-			if (move) {
-				this.model.performMove(move);
-				this.render();
-				this.dumbBrain.clear();
-			}
+			// const move = this.dumbBrain.chooseMove(this.model);
+			// if (move) {
+			// 	this.model.performMove(move);
+			// 	this.render();
+			// 	this.dumbBrain.clear();
+			// }
 		}
 	}
 }
