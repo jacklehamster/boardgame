@@ -2,6 +2,20 @@ class PrimeChessRenderer extends GridRenderer {
 	constructor() {
 		super();
 	}
+	
+	getInstructions() {
+		return `
+			Prime Chess is a variant of Chess.
+			Each piece has a number, indicating how many spaces they must move.
+			Pieces cannot move on an occupied cell unless they eat that piece.
+			A piece can eat an opponent piece, or a ally piece that has a number lower or equal to the eating piece.
+			When an ally piece is eaten, the eating piece adds the number of that piece to its own number.
+			The maximum piece number is 5.
+			Triangles move straight or laterally. They turn into circles if they reach the end.
+			Circles can move freely by the number of spaces indicated by their own number.
+			The square is the king. It cannot eat its own pieces. Protect it at all cost.
+		`;
+	}	
 
 	getPlayerColor(player, king) {
 		if (king) {
