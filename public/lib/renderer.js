@@ -33,8 +33,18 @@ class Renderer {
 		canvas.width = 600;
 		canvas.height = 500;
 		canvas.style.border = "1px solid black";
-		document.body.appendChild(canvas);
+		const div = document.body.appendChild(document.createElement("div"));
+		div.style.display = "flex";
+		div.style.flexDirection = "row";
+		div.appendChild(canvas);
+		const instruction = div.appendChild(document.createElement("div"));
+		div.appendChild(instruction);
+		div.innerText = this.getInstructions();
 		return canvas;
+	}
+	
+	getInstructions() {
+		return "";
 	}
 
 	setCursor(cursor) {
