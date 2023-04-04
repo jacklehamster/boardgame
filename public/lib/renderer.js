@@ -39,6 +39,7 @@ class Renderer {
 		div.appendChild(canvas);
 		const instruction = div.appendChild(document.createElement("div"));
 		instruction.innerText = this.getInstructions();
+		instruction.style.margin = "5px";
 		return canvas;
 	}
 	
