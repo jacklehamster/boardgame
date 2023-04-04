@@ -11,6 +11,8 @@ A collection of board games experiment. Each board game can be played against an
    This is a variant of chess where pieces move based on their numbers, and they change their numbers as they eat other pieces.
 - [Cross Prime](https://jacklehamster.github.io/boardgame/public/cross-prime/)
   Simply take turn putting a number, going from 1 to 16. Maximize the sum of lines going your way, while minimizing the sum going the opponent's way, but be careful because only prime numbers count.
+- [Reverse Cross Prime](https://jacklehamster.github.io/boardgame/public/reverse-cross-prime/)
+  Reverse cross prime is the reverse version of "Cross Prime". Numbers go from 16 to 1. I believe in this version, the AI is closer to be unbeatable.
 
 
 This project is meant for easily producing board games, along with an AI to play against. Feel free to use it to create your own board games.
@@ -23,5 +25,7 @@ Initially, this project was meant as a puzzle for the game ["The Impossible Room
 I started with Prime Chess. I figured that a game where numbers is involved would be very difficult for humans to play. That said, even playing at random sometimes lets the player beat the AI, or on occasion the game ends with nobody able to complete the game, given that pieces with even numbers are doomed to miss every other cell.
 
 My second attempt was Cross Prime. This time, I was pretty sure that the AI, being able to calculate primes easily, would outperform a human. This is true for most of the time, but occasionally, playing at random does end up with victory.
+
+I added Reverse Cross Prime because I think the AI has an easier time winning, if the large numbers don't come towards the end. I haven't tested extensively, but I believe that to be true. So perhaps, that is really the board game where is **"Impossible"** for humans to beat the AI!
 
 At the end, I just decided to not include this into the Impossible Room. But I just kept these games around just for fun.
