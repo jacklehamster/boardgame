@@ -43,6 +43,7 @@ class Renderer {
 		const link = instruction.appendChild(document.createElement("a"));
 		a.innerText = "https://jacklehamster.github.io/boardgame";
 		a.href = "https://jacklehamster.github.io/boardgame";
+		a.marginTop = "20px";
 		instruction.style.margin = "5px";		
 		return canvas;
 	}
