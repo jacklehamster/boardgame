@@ -38,8 +38,12 @@ class Renderer {
 		div.style.flexDirection = "row";
 		div.appendChild(canvas);
 		const instruction = div.appendChild(document.createElement("div"));
-		instruction.innerText = this.getInstructions();
-		instruction.style.margin = "5px";
+		const inst = instruction.appendChild(document.createElement("div"));
+		inst.innerText = this.getInstructions();
+		const link = instruction.appendChild(document.createElement("a"));
+		a.innerText = "https://jacklehamster.github.io/boardgame";
+		a.href = "https://jacklehamster.github.io/boardgame";
+		instruction.style.margin = "5px";		
 		return canvas;
 	}
 	
