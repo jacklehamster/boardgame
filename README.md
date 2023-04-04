@@ -1,34 +1,18 @@
-​
-4
+# Boardgame
+
+
 A collection of board games experiment. Each board game can be played against another human or the AI.
-5
-​
+
 ## Games
 
-6
-[Chess](https://jacklehamster.github.io/boardgame/public/chess/)
-7
-This is simply chess
-8
-​
-9
-[Prime Chess](https://jacklehamster.github.io/boardgame/public/prime-chess/)
-10
-This is a variant of chess where pieces move based on their numbers, and they change their numbers as they eat other pieces.
-11
-​
-12
-[Cross Prime](https://jacklehamster.github.io/boardgame/public/cross-prime/)
-13
-Simply take turn putting a number, going from 1 to 16. Maximize the sum of lines going your way, while minimizing the sum going the opponent's way, but be careful because only prime numbers count.
-14
+- [Chess](https://jacklehamster.github.io/boardgame/public/chess/)
+  This is simply chess
+- [Prime Chess](https://jacklehamster.github.io/boardgame/public/prime-chess/)
+   This is a variant of chess where pieces move based on their numbers, and they change their numbers as they eat other pieces.
+- [Cross Prime](https://jacklehamster.github.io/boardgame/public/cross-prime/)
+  Simply take turn putting a number, going from 1 to 16. Maximize the sum of lines going your way, while minimizing the sum going the opponent's way, but be careful because only prime numbers count.
 ___
-15
-​
-16
 This project is meant for easily producing board games, along with an AI to play against. Feel free to use it to create your own board games.
-17
-​
 ---
 
 ## Background
