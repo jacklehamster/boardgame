@@ -11,3 +11,5 @@ This is a variant of chess where pieces move based on their numbers, and they ch
 
 [Cross Prime](https://jacklehamster.github.io/boardgame/public/cross-prime/)
 Simply take turn putting a number, going from 1 to 16. Maximize the sum of lines going your way, while minimizing the sum going the opponent's way, but be careful because only prime numbers count.
+___
+
