@@ -5,10 +5,21 @@ class CrossPrimeRenderer extends DiamondRenderer {
 
 	getPlayerColor(player, king) {
 		if (king) {
-			return player === 2 ? "#ffaaaa" : "#ffffdd";
+			return player === 2 ? "#ff8888" : "#ffffdd";
 		} else {
-			return player === 2 ? "#ff3333" : "#ffff00";
+			return player === 2 ? "#ff5555" : "#ffff00";
 		}
+	}
+	
+	getInstructions() {
+		return `
+			Cross prime is a variant of Tic-Tac-Toe.
+			Each player takes turn putting a number down into a 4x4 grid.
+			The number to put down goes from 1 to 16.
+			The blue lines belong to the top player, the red lines belong to the bottom player.
+			The goal for each player is to maximize the sum on their line.
+			Only sums that end as PRIME NUMBERS count.
+		`;
 	}
 
 	async render(model) {
