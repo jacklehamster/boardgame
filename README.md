@@ -13,3 +13,4 @@ This is a variant of chess where pieces move based on their numbers, and they ch
 Simply take turn putting a number, going from 1 to 16. Maximize the sum of lines going your way, while minimizing the sum going the opponent's way, but be careful because only prime numbers count.
 ___
 
+This project is meant for easily producing board games, along with an AI to play against. Feel free to use it to create your own board games.
