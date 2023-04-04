@@ -38,7 +38,6 @@ class Renderer {
 		div.style.flexDirection = "row";
 		div.appendChild(canvas);
 		const instruction = div.appendChild(document.createElement("div"));
-		instruction.appendChild(instruction);
 		instruction.innerText = this.getInstructions();
 		return canvas;
 	}
